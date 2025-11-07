@@ -22,7 +22,28 @@
 #include "dm4310_drv.hpp"
 #include "iwdg.h"
 #include "math.h"
-#include "control.hpp"
+#include "control.hpp"//注释
+//保险起见，建议这些代码最后往上放
+//变量定义区域
+//常量定义区域
+constexpr float MAXSPEED = 16000;
+constexpr float W = 10;
+constexpr float KI1 = 0.005f;
+constexpr float KI2 = 0.005f;
+constexpr float KI3 = 0.005f;
+constexpr float KI4 = 0.005f;
+constexpr float KP1 = 0.2f;
+constexpr float KP2 = 0.2f;
+constexpr float KP3 = 0.2f;
+constexpr float KP4 = 0.2f;
+constexpr float KD1 = 0.001f;
+constexpr float KD2 = 0.001f;
+constexpr float KD3 = 0.001f;
+constexpr float KD4 = 0.001f;
+//类定义区域
+control::dipan dp;//底盘控制
+control::pid pid_control(KP1,KI1,KD1,KP2,KI2,KD2,KP3,KI3,KD3,KP4,KI4,KD4);
+
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -37,7 +58,22 @@ static const uint8_t kRxBufLen = remote_control::kRcRxDataLen;
 static uint8_t rx_buf[kRxBufLen];
 remote_control::DT7 *rc_ptr;
 void RobotInit(void) { rc_ptr = new remote_control::DT7(); }
-
+void MODE2(void){
+dp.set_data(W,rc_ptr->rc_lv(),rc_ptr->rc_lh(),MAXSPEED);
+dp.calculate();
+pid_control.set_purpose(dp.get_v1(),dp.get_v2(),dp.get_v3(),dp.get_v4());
+pid_control.calculate();
+CAN_Send_Msg(&hcan2,pid_control.get_data(),0x1FE,8);
+}
+void MODE4(void){
+  
+}
+void MODE1(void){
+  
+}
+void MODE3(void){
+  
+}
 void MainInit(void) {
   RobotInit();
 
@@ -93,26 +129,5 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
     HAL_UARTEx_ReceiveToIdle_DMA(&huart3, rx_buf, kRxBufLen);
   }
 }
-//注释
-//保险起见，建议这些代码最后往上放
-//变量定义区域
-//类定义区域
-control::dipan dp;//底盘控制
-//常量定义区域
-constexpr float MAXSPEED = 16000;
-constexpr float W = 10;
-//函数定义区域
-void MODE2(void){
-dp.set_data(W,rc_ptr->rc_lv(),rc_ptr->rc_lh(),MAXSPEED);
-dp.calculate();
 
-}
-void MODE4(void){
-  
-}
-void MODE1(void){
-  
-}
-void MODE3(void){
-  
-}
+//函数定义区域

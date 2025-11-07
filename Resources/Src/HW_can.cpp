@@ -15,7 +15,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "HW_can.hpp"
 #include "stdint.h"
-
+#include "control.hpp"
 #include "dm4310_drv.hpp"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
@@ -24,7 +24,7 @@
 static CAN_RxHeaderTypeDef rx_header1, rx_header2;
 static uint8_t can1_rx_data[8], can2_rx_data[8];
 uint32_t pTxMailbox;
-
+extern control::pid pid_control;
 /* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 
@@ -111,6 +111,23 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
     {
       if (rx_header2.StdId == 0x200) { // 帧头校验
         // 校验通过进行具体数据处理
+        float temp1 = 0;
+        float temp2 = 0;
+        float temp3 = 0;
+        float temp4 = 0;
+        if (rx_header2.StdId == 0x205) {
+          temp1 = (float)((int16_t)(((uint16_t)can2_rx_data[2] << 8) | (uint16_t)can2_rx_data[3]));
+        }
+        if (rx_header2.StdId == 0x206) {
+          temp2 = (float)((int16_t)(((uint16_t)can2_rx_data[2] << 8) | (uint16_t)can2_rx_data[3]));
+        }
+        if (rx_header2.StdId == 0x207) {
+          temp2 = (float)((int16_t)(((uint16_t)can2_rx_data[2] << 8) | (uint16_t)can2_rx_data[3]));
+        }
+        if (rx_header2.StdId == 0x208) {
+          temp2 = (float)((int16_t)(((uint16_t)can2_rx_data[2] << 8) | (uint16_t)can2_rx_data[3]));
+        }
+        pid_control.set_su_du(temp1,temp2,temp3,temp4);
       }
     }
   }
