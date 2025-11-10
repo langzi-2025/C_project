@@ -30,14 +30,15 @@ constexpr float KI1 = 0.005f;
 constexpr float KI2 = 0.005f;
 constexpr float KI3 = 0.005f;
 constexpr float KI4 = 0.005f;
-constexpr float KP1 = 0.2f;
-constexpr float KP2 = 0.2f;
-constexpr float KP3 = 0.2f;
-constexpr float KP4 = 0.2f;
+constexpr float KP1 = 20.0f;
+constexpr float KP2 = 20.0f;
+constexpr float KP3 = 20.0f;
+constexpr float KP4 = 20.0f;
 constexpr float KD1 = 0.001f;
 constexpr float KD2 = 0.001f;
 constexpr float KD3 = 0.001f;
 constexpr float KD4 = 0.001f;
+//观测接口
 //类定义区域
 control::dipan dp;
 control::pid pid_control(KP1,KI1,KD1,KP2,KI2,KD2,KP3,KI3,KD3,KP4,KI4,KD4);
@@ -46,6 +47,7 @@ void MODE4(void);
 void MODE2(void);
 void MODE1(void);
 void MODE3(void);
+uint8_t KONG_DATA[8]={0,0,0,0,0,0,0,0};
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -82,9 +84,13 @@ void MainInit(void) {
 
 void MainTask(void) { 
 tick++;
+if(tick<1000)
+{
+  MODE4();
+}
 remote_control::SwitchState temp_switch_l = rc_ptr->rc_l_switch();
 remote_control::SwitchState temp_switch_r = rc_ptr->rc_r_switch();
-if(temp_switch_l == remote_control::kSwitchStateUp){
+if(temp_switch_l == remote_control::kSwitchStateMid){
   MODE4();//归0
 }
 else if(temp_switch_r == remote_control::kSwitchStateUp){
@@ -123,14 +129,11 @@ dp.set_data(0,rc_ptr->rc_lv(),rc_ptr->rc_lh(),MAXSPEED);
 dp.calculate();
 pid_control.set_purpose(dp.get_v1(),dp.get_v2(),dp.get_v3(),dp.get_v4());
 pid_control.calculate();
-CAN_Send_Msg(&hcan2,pid_control.get_data(),0x1FE,8);
+CAN_Send_Msg(&hcan2,pid_control.get_data(),0x200,8);
+
 }
 void MODE4(void){
-dp.set_data(0,0,0,0);
-dp.calculate();
-pid_control.set_purpose(dp.get_v1(),dp.get_v2(),dp.get_v3(),dp.get_v4());
-pid_control.calculate();
-CAN_Send_Msg(&hcan2,pid_control.get_data(),0x1FE,8);
+CAN_Send_Msg(&hcan2,KONG_DATA,0x200,8);
 }
 void MODE1(void){
   

@@ -2,7 +2,7 @@
  * @Author: rogue-wave zhangjingjie@zju.edu.cn
  * @Date: 2025-11-06 21:12:54
  * @LastEditors: rogue-wave zhangjingjie@zju.edu.cn
- * @LastEditTime: 2025-11-07 21:48:24
+ * @LastEditTime: 2025-11-10 22:26:01
  * @FilePath: \C_project\Tasks\control.cpp
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -58,16 +58,16 @@ void control::pid::calculate(void)//pid计算
     if(e4_sum>1000) e4_sum=1000;
     if(e4_sum<-1000) e4_sum=-1000;
     output4 = kp4*e4 + ki4*e4_sum + kd4*(e4-e4_last);
-    int16_t temp = (int16_t)output1;
+    int16_t temp = (int16_t)(output1)/3;
     send_data[0] = (uint8_t)(temp>>8);
     send_data[1] = (uint8_t)(temp&0xff);
-    temp = (int16_t)output2;
+    temp = (int16_t)output2/3;
     send_data[2] = (uint8_t)(temp>>8);
     send_data[3] = (uint8_t)(temp&0xff);
-    temp = (int16_t)output3;
+    temp = (int16_t)output3/3;
     send_data[4] = (uint8_t)(temp>>8);
     send_data[5] = (uint8_t)(temp&0xff);
-    temp = (int16_t)output4;
+    temp = (int16_t)output4/3;
     send_data[6] = (uint8_t)(temp>>8);
     send_data[7] = (uint8_t)(temp&0xff);
 }

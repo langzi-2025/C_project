@@ -41,6 +41,10 @@ pid(float kp1,float ki1,float kd1,float kp2,float ki2,float kd2,float kp3,float 
     this->ki4 = ki4;
     this->kd4 = kd4;
 }
+float OUTPUT(void)
+{
+    return output1;
+}
 void set_purpose(float e1_purpose,float e2_purpose,float e3_purpose,float e4_purpose)
 {
     this->e1_purpose = e1_purpose;
