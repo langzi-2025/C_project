@@ -61,7 +61,9 @@ namespace remote_control = hello_world::devices::remote_control;
 static const uint8_t kRxBufLen = remote_control::kRcRxDataLen;
 static uint8_t rx_buf[kRxBufLen];
 remote_control::DT7 *rc_ptr;
-void RobotInit(void) { rc_ptr = new remote_control::DT7(); }
+void RobotInit(void) { 
+rc_ptr = new remote_control::DT7();
+}
 
 void MainInit(void) {
   RobotInit();
